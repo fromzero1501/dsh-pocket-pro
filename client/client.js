@@ -123,6 +123,16 @@ if (!alreadyRegistered()) {
         log: '隧道输出',
         qrTitle: '扫码连接',
         qrHint: '用手机相机扫描二维码，即可打开 Pocket。',
+        roamTitle: '外出模式',
+        roamHint: 'DSH 关掉后，隧道继续对外服务。',
+        roamOn: '已开启',
+        roamOff: '已关闭',
+        roamEnable: '开启外出模式',
+        roamDisable: '关闭外出模式',
+        roamIdleHint: '关闭：退出 DSH 时一并停掉隧道，下次启动重新建立地址。',
+        roamActiveHint: '开启：退出 DSH 时隧道保留，手机仍能访问当前地址；重新打开 DSH 会接管这条隧道，地址不变。',
+        roamOnlyCpolars: '外出模式只对 cpolar 生效——cloudflared 的临时地址每次启动都会换，接管没有意义。',
+        roamNote: '开启后 cpolar 以独立进程运行，DSH 崩溃或被关掉都不影响它。要真正停掉，用下面的「停止」。',
         awakeCard: '电脑常亮',
         awakeHint: '让系统不因空闲睡眠，远程连接保持可用。',
         awakeOn: '已开启',
@@ -273,6 +283,16 @@ if (!alreadyRegistered()) {
         log: 'Tunnel output',
         qrTitle: 'Scan to connect',
         qrHint: 'Scan this code with a phone camera to open Pocket.',
+        roamTitle: 'Roam mode',
+        roamHint: 'Keep the tunnel up after DSH exits.',
+        roamOn: 'On',
+        roamOff: 'Off',
+        roamEnable: 'Enable roam mode',
+        roamDisable: 'Disable roam mode',
+        roamIdleHint: 'Off: quitting DSH also stops the tunnel; the address is rebuilt next start.',
+        roamActiveHint: 'On: quitting DSH leaves the tunnel running, so the phone keeps working on the same address. Restarting DSH adopts it without changing the URL.',
+        roamOnlyCpolars: 'Roam mode only applies to cpolar — a cloudflared quick tunnel gets a new address every start, so adopting it would be pointless.',
+        roamNote: 'cpolar runs as a detached process: DSH crashing or quitting does not touch it. Use Stop below to really shut it down.',
         awakeCard: 'Keep awake',
         awakeHint: 'Stop the system from idle-sleeping so remote access stays available.',
         awakeOn: 'Active',
@@ -1071,6 +1091,28 @@ if (!alreadyRegistered()) {
                 : h('div', { className: 'dsh-pk-note' },
                   `cpolar ${typeof cpolar.version === 'string' ? cpolar.version : ''} · ${LANG.cpolarReady}`.trim());
 
+        const tunnelState = status.tunnel ?? {};
+        const roamOn = tunnelState.roam === true;
+        const toggleRoam = () => {
+          void action('set-roam', { enabled: !roamOn });
+        };
+        const roamPanel = h('div', { className: 'dsh-pk-field' },
+          h('span', { className: 'dsh-pk-field-label' }, LANG.roamTitle),
+          provider !== 'cpolar'
+            ? h('span', { className: 'dsh-pk-hint' }, LANG.roamOnlyCpolars)
+            : h('div', {},
+              h('div', { className: 'dsh-pk-actions' },
+                h('button', {
+                  className: roamOn ? 'dsh-pk-btn' : 'dsh-pk-btn primary',
+                  disabled: busy !== '',
+                  onClick: toggleRoam,
+                }, busy === 'set-roam' ? LANG.switching : (roamOn ? LANG.roamDisable : LANG.roamEnable)),
+              ),
+              h('span', { className: 'dsh-pk-hint' }, roamOn ? LANG.roamActiveHint : LANG.roamIdleHint),
+            ),
+          h('span', { className: 'dsh-pk-note' }, LANG.roamNote),
+        );
+
         const tunnelCard = h('section', { className: 'dsh-pk-card' },
           h('div', { className: 'dsh-pk-card-top' },
             h('span', { className: 'dsh-pk-card-icon' }, h(LineIcon, { name: 'globe', size: 16 })),
@@ -1107,6 +1149,7 @@ if (!alreadyRegistered()) {
             )
             : null,
           cpolarPanel,
+          roamPanel,
           h('div', { className: 'dsh-pk-actions' },
             h('button', {
               className: 'dsh-pk-btn primary block',
