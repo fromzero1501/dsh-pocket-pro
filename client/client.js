@@ -66,6 +66,19 @@ if (!alreadyRegistered()) {
         cpolar: 'cpolar',
         cpolarShort: 'cpolar',
         cpolarDesc: '固定域名 · 需账号令牌 · 国内直连',
+        cpolarMissing: '还没有 cpolar 组件',
+        cpolarMissingHint: '点一下从官方地址下载（约 7.6 MB），自动解包到位，不需要管理员权限。',
+        cpolarInstall: '下载安装',
+        cpolarInstalling: '下载中…',
+        cpolarInstalled: 'cpolar 已安装',
+        cpolarTokenTitle: '还差 authtoken',
+        cpolarTokenHint: 'cpolar 需要账号令牌才能建隧道：到控制台复制后粘贴到这里。',
+        cpolarTokenPlaceholder: '粘贴 authtoken',
+        cpolarTokenSave: '保存令牌',
+        cpolarTokenSaved: '令牌已保存',
+        cpolarReady: '已就绪，可以建立隧道',
+        cpolarUnsupported: '当前平台没有 cpolar 预编译包',
+        cpolarDashboard: '打开控制台',
         ownServer: '自有服务器',
         ownServerDesc: 'SSH 反向转发 · 自备公网 IP',
         serverAddress: '服务器 IP / 域名',
@@ -203,6 +216,19 @@ if (!alreadyRegistered()) {
         cpolar: 'cpolar',
         cpolarShort: 'cpolar',
         cpolarDesc: 'Stable host · account token required · direct in CN',
+        cpolarMissing: 'cpolar is not installed yet',
+        cpolarMissingHint: 'One click downloads it from the official site (about 7.6 MB) and unpacks it in place. No admin rights needed.',
+        cpolarInstall: 'Download and install',
+        cpolarInstalling: 'Downloading…',
+        cpolarInstalled: 'cpolar installed',
+        cpolarTokenTitle: 'Authtoken is still missing',
+        cpolarTokenHint: 'cpolar needs an account token before it can open a tunnel. Copy one from the dashboard and paste it here.',
+        cpolarTokenPlaceholder: 'Paste authtoken',
+        cpolarTokenSave: 'Save token',
+        cpolarTokenSaved: 'Token saved',
+        cpolarReady: 'Ready to open a tunnel',
+        cpolarUnsupported: 'No prebuilt cpolar binary for this platform',
+        cpolarDashboard: 'Open dashboard',
         ownServer: 'Own server',
         ownServerDesc: 'SSH reverse relay · your public IP',
         serverAddress: 'Server IP / hostname',
@@ -737,6 +763,7 @@ if (!alreadyRegistered()) {
         const [view, setView] = useState('overview');
         const [provider, setProvider] = useState('cloudflared');
         const [sshHost, setSshHost] = useState('');
+        const [cpolarToken, setCpolarToken] = useState('');
         const [displayDraft, setDisplayDraft] = useState(undefined);
         const timer = useRef(0);
 
@@ -835,6 +862,28 @@ if (!alreadyRegistered()) {
           }
           setError('');
           void action('switch-tunnel', { provider, sshHost: sshHost.trim() });
+        };
+
+        const installCpolarComponent = () => {
+          setError('');
+          void action('install-cpolar').then((next) => {
+            if (next?.cpolar?.installed === true) setToast(LANG.cpolarInstalled);
+          });
+        };
+
+        const saveCpolarToken = () => {
+          const token = cpolarToken.trim();
+          if (token.length === 0) {
+            setError(LANG.cpolarTokenPlaceholder);
+            return;
+          }
+          setError('');
+          void action('set-cpolar-token', { authtoken: token }).then((next) => {
+            if (next?.cpolar?.tokenConfigured === true) {
+              setToast(LANG.cpolarTokenSaved);
+              setCpolarToken('');
+            }
+          });
         };
 
         const draftDisplay = displayDraft ?? status?.display ?? {
@@ -973,6 +1022,55 @@ if (!alreadyRegistered()) {
           ),
         );
 
+        const cpolar = status.cpolar ?? {};
+        const cpolarPanel = provider !== 'cpolar'
+          ? null
+          : cpolar.supported === false
+            ? h('div', { className: 'dsh-pk-note' }, LANG.cpolarUnsupported)
+            : cpolar.installed !== true
+              ? h('div', { className: 'dsh-pk-field' },
+                h('span', { className: 'dsh-pk-field-label' }, LANG.cpolarMissing),
+                h('button', {
+                  className: 'dsh-pk-btn primary block',
+                  disabled: busy !== '',
+                  onClick: installCpolarComponent,
+                }, busy === 'install-cpolar' ? LANG.cpolarInstalling : LANG.cpolarInstall),
+                h('span', { className: 'dsh-pk-hint' }, LANG.cpolarMissingHint),
+              )
+              : cpolar.tokenConfigured !== true
+                ? h('div', { className: 'dsh-pk-field' },
+                  h('span', { className: 'dsh-pk-field-label' }, LANG.cpolarTokenTitle),
+                  h('div', { className: 'dsh-pk-input-shell' },
+                    h(LineIcon, { name: 'server', size: 15 }),
+                    h('input', {
+                      className: 'dsh-pk-input',
+                      type: 'password',
+                      value: cpolarToken,
+                      placeholder: LANG.cpolarTokenPlaceholder,
+                      disabled: busy !== '',
+                      onChange: (event) => setCpolarToken(event.target.value),
+                    }),
+                  ),
+                  h('div', { className: 'dsh-pk-actions' },
+                    h('button', {
+                      className: 'dsh-pk-btn primary',
+                      disabled: busy !== '' || cpolarToken.trim().length === 0,
+                      onClick: saveCpolarToken,
+                    }, LANG.cpolarTokenSave),
+                    typeof cpolar.tokenUrl === 'string' && cpolar.tokenUrl.length > 0
+                      ? h('a', {
+                        className: 'dsh-pk-btn',
+                        href: cpolar.tokenUrl,
+                        target: '_blank',
+                        rel: 'noopener noreferrer',
+                      }, LANG.cpolarDashboard)
+                      : null,
+                  ),
+                  h('span', { className: 'dsh-pk-hint' }, LANG.cpolarTokenHint),
+                )
+                : h('div', { className: 'dsh-pk-note' },
+                  `cpolar ${typeof cpolar.version === 'string' ? cpolar.version : ''} · ${LANG.cpolarReady}`.trim());
+
         const tunnelCard = h('section', { className: 'dsh-pk-card' },
           h('div', { className: 'dsh-pk-card-top' },
             h('span', { className: 'dsh-pk-card-icon' }, h(LineIcon, { name: 'globe', size: 16 })),
@@ -1008,6 +1106,7 @@ if (!alreadyRegistered()) {
               h('span', { className: 'dsh-pk-hint' }, LANG.serverAddressHint),
             )
             : null,
+          cpolarPanel,
           h('div', { className: 'dsh-pk-actions' },
             h('button', {
               className: 'dsh-pk-btn primary block',
