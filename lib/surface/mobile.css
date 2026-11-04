@@ -1,0 +1,378 @@
+/* Phone layout injected by dsh-pocket for the desktop surface (≤768px). */
+
+@media (max-width: 768px) {
+  /* ---------- app shell: the left sidebar becomes an overlay drawer ---------- */
+  [class*="_frame"]:not([data-sidebar-collapsed="true"]) {
+    grid-template-columns: 56px minmax(0px, 1fr) 0px !important;
+  }
+
+  [class*="_frame"]:not([data-sidebar-collapsed="true"]) [class*="_sidebarCol"] {
+    position: fixed !important;
+    inset: 0 auto 0 0 !important;
+    width: min(280px, 86vw) !important;
+    z-index: 120;
+    background: var(--dsw-alias-bg-base);
+    overscroll-behavior: contain;
+    box-shadow:
+      0 0 0 1px var(--dsw-alias-border-l2),
+      0 24px 70px rgba(0, 0, 0, 0.32);
+  }
+
+  /* Taking the sidebar out of flow makes the remaining grid children slide one
+     column left, which squashes the conversation into the 56px rail column.
+     Pin the real columns back so the chat stays behind the drawer. */
+  [class*="_frame"]:not([data-sidebar-collapsed="true"]) [class*="_centerCol"] {
+    grid-column: 2 !important;
+  }
+
+  [class*="_frame"]:not([data-sidebar-collapsed="true"]) [class*="_rightbarCol"] {
+    grid-column: 3 !important;
+  }
+
+  [class*="_frame"]:not([data-sidebar-collapsed="true"]) [class*="_sidebarCol"] > * {
+    width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .dsh-pocket-backdrop {
+    position: fixed;
+    inset: 0;
+    z-index: 110;
+    background: rgba(8, 12, 20, 0.4);
+    -webkit-backdrop-filter: blur(1px);
+    backdrop-filter: blur(1px);
+  }
+
+  /* ---------- dialogs other than settings: keep them inside the viewport ---------- */
+  [role="dialog"]:not(:has(> nav)) {
+    max-width: calc(100vw - 16px) !important;
+    max-height: calc(100dvh - 16px) !important;
+  }
+
+  /* ---------- settings dialog: full screen + horizontal section tabs ---------- */
+  [role="dialog"]:has(> nav) {
+    position: fixed !important;
+    inset: 0 !important;
+    width: 100vw !important;
+    max-width: 100vw !important;
+    height: 100dvh !important;
+    max-height: 100dvh !important;
+    margin: 0 !important;
+    border-radius: 0 !important;
+    z-index: 300;
+    flex-direction: column;
+  }
+
+  [role="dialog"]:has(> nav) > nav {
+    width: 100% !important;
+    min-height: 0;
+    flex: none;
+    flex-direction: row;
+    align-items: center;
+    gap: 8px;
+    border-right: 0 !important;
+    border-bottom: 1px solid var(--dsw-alias-border-l2);
+    padding: 6px 46px 0 12px !important;
+  }
+
+  [role="dialog"]:has(> nav) > nav > :first-child {
+    display: block !important;
+    flex: none;
+    white-space: nowrap;
+    font-weight: 650;
+  }
+
+  [role="dialog"]:has(> nav) > nav [class*="_navList"] {
+    flex: 1 1 auto;
+    flex-direction: row !important;
+    align-items: center;
+    gap: 2px;
+    min-width: 0;
+    overflow-x: auto;
+    overflow-y: hidden;
+    padding: 4px 0 8px !important;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  [role="dialog"]:has(> nav) > nav [class*="_navList"]::-webkit-scrollbar {
+    display: none;
+  }
+
+  [role="dialog"]:has(> nav) > nav [class*="_navCell"] {
+    width: auto !important;
+    flex: 0 0 auto;
+    white-space: nowrap;
+    height: 36px !important;
+    padding: 0 12px !important;
+    border-radius: 10px;
+  }
+
+  [role="dialog"]:has(> nav) > [class*="_content"] {
+    flex: 1 1 auto;
+    width: 100% !important;
+    min-width: 0;
+    min-height: 0;
+  }
+
+  [role="dialog"]:has(> nav) > [class*="_content"] [class*="_options"] {
+    padding: 12px !important;
+  }
+
+  /* the close control sits at the right edge of the tab bar; the config-file
+     action targets the desktop shell and is hidden on a phone */
+  [role="dialog"]:has(> nav) > [class*="_content"] > [class*="_header"] {
+    position: absolute !important;
+    top: 0;
+    right: 0;
+    width: auto !important;
+    height: 54px;
+    min-height: 0 !important;
+    padding: 0 6px 0 0 !important;
+    margin: 0;
+    align-items: center;
+    justify-content: flex-end;
+    background: transparent;
+    border: 0;
+    z-index: 5;
+  }
+
+  [role="dialog"]:has(> nav) > [class*="_content"] > [class*="_header"] [class*="_actions"] {
+    display: none !important;
+  }
+
+  /* ---------- plugin overlays that share the composer's corner ---------- */
+  .dshwv-root {
+    transform: translateY(-72px);
+  }
+
+  /* ---------- phone directory picker for adding a workspace ---------- */
+  .dsh-pocket-modal-mask {
+    position: fixed;
+    inset: 0;
+    z-index: 500;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 18px;
+    background: rgba(8, 12, 20, 0.45);
+    -webkit-backdrop-filter: blur(2px);
+    backdrop-filter: blur(2px);
+  }
+
+  .dsh-pocket-modal {
+    display: flex;
+    flex-direction: column;
+    width: min(420px, 100%);
+    max-height: calc(100dvh - 36px);
+    padding: 18px;
+    border-radius: 16px;
+    border: 1px solid var(--dsw-alias-border-l2, #dfe2ea);
+    background: var(--dsw-alias-bg-layer-2, #fff);
+    color: var(--dsw-alias-label-primary, #1a1d24);
+    box-shadow: 0 24px 70px rgba(0, 0, 0, 0.35);
+    font-size: 14px;
+  }
+
+  .dsh-pocket-modal h3 {
+    margin: 0 0 6px;
+    font-size: 16px;
+  }
+
+  .dsh-pocket-modal p {
+    margin: 0 0 12px;
+    color: var(--dsw-alias-label-caption, #8b93a3);
+    font-size: 12px;
+    line-height: 1.6;
+  }
+
+  .dsh-pocket-path-row {
+    display: flex;
+    align-items: stretch;
+    gap: 6px;
+  }
+
+  .dsh-pocket-up {
+    flex: none;
+    width: 34px;
+    border-radius: 9px;
+    border: 1px solid var(--dsw-alias-border-l2, #dfe2ea);
+    background: var(--dsw-alias-bg-layer-1, #f6f7f9);
+    color: inherit;
+    font-size: 16px;
+  }
+
+  .dsh-pocket-up:disabled {
+    opacity: 0.4;
+  }
+
+  .dsh-pocket-input {
+    flex: 1;
+    min-width: 0;
+    padding: 9px 11px;
+    border-radius: 9px;
+    border: 1px solid var(--dsw-alias-border-l2, #dfe2ea);
+    background: var(--dsw-alias-bg-layer-1, #f6f7f9);
+    color: inherit;
+    font: inherit;
+    font-size: 13px;
+  }
+
+  .dsh-pocket-dir-list {
+    min-height: 120px;
+    max-height: 42vh;
+    margin-top: 10px;
+    overflow: auto;
+    border: 1px solid var(--dsw-alias-border-l1, #e6e8ee);
+    border-radius: 10px;
+    background: var(--dsw-alias-bg-layer-1, #f6f7f9);
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .dsh-pocket-dir {
+    display: block;
+    width: 100%;
+    padding: 11px 12px;
+    border: 0;
+    border-bottom: 1px solid var(--dsw-alias-border-l1, #e6e8ee);
+    background: transparent;
+    color: inherit;
+    font: inherit;
+    font-size: 13px;
+    text-align: left;
+  }
+
+  .dsh-pocket-dir:last-child {
+    border-bottom: 0;
+  }
+
+  .dsh-pocket-dir:active {
+    background: var(--dsw-alias-bg-layer-2, #fff);
+  }
+
+  .dsh-pocket-dir::before {
+    content: "📁 ";
+  }
+
+  .dsh-pocket-dir-empty {
+    padding: 16px 12px;
+    color: var(--dsw-alias-label-caption, #8b93a3);
+    font-size: 12px;
+    text-align: center;
+  }
+
+  .dsh-pocket-error {
+    margin-top: 8px;
+    color: var(--dsw-alias-state-error-primary, #e5484d);
+    font-size: 12px;
+    line-height: 1.5;
+  }
+
+  .dsh-pocket-actions {
+    display: flex;
+    gap: 8px;
+    margin-top: 14px;
+  }
+
+  .dsh-pocket-actions button {
+    flex: 1;
+    padding: 10px 12px;
+    border-radius: 10px;
+    border: 1px solid var(--dsw-alias-border-l2, #dfe2ea);
+    background: var(--dsw-alias-bg-layer-1, #f6f7f9);
+    color: inherit;
+    font: inherit;
+    font-size: 13px;
+    font-weight: 600;
+  }
+
+  .dsh-pocket-actions button.primary {
+    border-color: transparent;
+    background: var(--dsw-alias-button-primary-fill, #3b70e8);
+    color: #fff;
+  }
+
+  .dsh-pocket-actions button:disabled {
+    opacity: 0.6;
+  }
+
+  /* ---------- download workspace files to the phone ---------- */
+  .dsh-pocket-preview-download {
+    flex: none;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    margin-left: 2px;
+    border: 0;
+    border-radius: 6px;
+    background: transparent;
+    color: var(--dsw-alias-label-secondary, #5b6270);
+    cursor: pointer;
+  }
+
+  .dsh-pocket-preview-download:hover,
+  .dsh-pocket-preview-download:active {
+    background: var(--dsw-alias-bg-layer-2, #eef0f4);
+    color: var(--dsw-alias-label-primary, #171a20);
+  }
+
+  .dsh-pocket-preview-download svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .dsh-pocket-row-download {
+    flex: none;
+    margin-left: auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 28px;
+    height: 28px;
+    border-radius: 7px;
+    color: var(--dsw-alias-label-secondary, #5b6270);
+    cursor: pointer;
+  }
+
+  .dsh-pocket-row-download:hover,
+  .dsh-pocket-row-download:active {
+    background: var(--dsw-alias-bg-layer-2, #eef0f4);
+    color: var(--dsw-alias-button-primary-fill, #3b70e8);
+  }
+
+  .dsh-pocket-row-download svg {
+    width: 16px;
+    height: 16px;
+  }
+
+  .dsh-pocket-download-toast {
+    position: fixed;
+    left: 50%;
+    bottom: calc(96px + env(safe-area-inset-bottom, 0px));
+    z-index: 300;
+    max-width: min(86vw, 420px);
+    padding: 9px 14px;
+    border-radius: 11px;
+    background: rgba(22, 26, 34, 0.96);
+    color: #eef2f8;
+    font-size: 12.5px;
+    line-height: 1.4;
+    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.32);
+    opacity: 0;
+    transform: translate(-50%, 8px);
+    pointer-events: none;
+    transition: opacity 0.18s ease, transform 0.18s ease;
+  }
+
+  .dsh-pocket-download-toast.show {
+    opacity: 1;
+    transform: translate(-50%, 0);
+  }
+
+  .dsh-pocket-download-toast.error {
+    background: rgba(72, 22, 28, 0.96);
+    color: #ffd7d7;
+  }
+}

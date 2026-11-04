@@ -1,0 +1,29 @@
+# dsh-pocket bundle patch.
+#
+# name 必须逐字等于本包 package.json 的 name：宿主 client-modules 以 loader 行名
+# 定位 package.json（nearestPackage 严格比对 name），写成裸名时宿主半边仍能挂载，
+# 但客户端半边会被静默丢弃。
+- insert:
+    - id: dsh-pocket-pro
+      name: 'dsh-pocket-pro'
+      config:
+        # 移动端页面监听端口；被占用时自动向后寻找空闲端口。
+        port: 8790
+        # 是否同时允许局域网访问（绑定 0.0.0.0）。仅本机/隧道可关掉。
+        lan: true
+        # auto = 依次尝试 cloudflared → localtunnel → localhost.run → cpolar
+        tunnel: auto
+        # cpolar（需账号）：默认找 ~/.cpolar/cpolar 与 ~/.cpolar/cpolar.yml，
+        # 装在别处时取消以下注释并写绝对路径。
+        # cpolarPath: C:\Users\you\.cpolar\cpolar.exe
+        # cpolarConfig: C:\Users\you\.cpolar\cpolar.yml
+        # cpolarRegion: cn
+        # 启动即保持电脑常亮（不熄屏、不休眠）；面板/手机上的开关会覆盖它并持久化。
+        keepAwake: false
+        # 自有服务器转发示例（把 tunnel 改成 ssh 并取消以下注释；IP 仅为文档示例）：
+        # sshHost: 203.0.113.10
+        # sshUser: root
+        # sshKeyPath: ~/.ssh/id_ed25519
+        # sshRemotePort: 8790
+        # sshExposePort: 80
+        # sshPublicUrl: https://pocket.example.com

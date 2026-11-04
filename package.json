@@ -1,0 +1,71 @@
+{
+  "name": "dsh-pocket-pro",
+  "version": "0.18.0",
+  "description": "Pocket Access Pro — a mobile companion for DeepSeek Harness with an extra cpolar tunnel provider: live sessions, tool approvals, file downloads, LAN/tunnel access, and one-tap keep-awake. · 把本机 DeepSeek Harness 装进口袋：手机查看会话与流式输出、反向发送指令、处理提问与审批、下载文件，并一键保持电脑常亮；公网入口在 cloudflared 之外新增 cpolar。",
+  "type": "module",
+  "main": "lib/index.js",
+  "icon": "./icon.svg",
+  "license": "MIT",
+  "author": "RestRegular",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/fromzero1501/dsh-pocket-pro.git"
+  },
+  "homepage": "https://github.com/fromzero1501/dsh-pocket-pro#readme",
+  "bugs": {
+    "url": "https://github.com/fromzero1501/dsh-pocket-pro/issues"
+  },
+  "files": [
+    "lib",
+    "web",
+    "client",
+    "locale",
+    "preview",
+    "cordis.patch.yml",
+    "icon.svg",
+    "README.md",
+    "LICENSE",
+    "THIRD_PARTY_NOTICES.md"
+  ],
+  "exports": {
+    ".": "./lib/index.js",
+    "./client": "./client/client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./locale/*.json": "./locale/*.json",
+    "./icon": "./icon.svg",
+    "./package.json": "./package.json"
+  },
+  "dsh": {
+    "bundle": {
+      "patch": "./cordis.patch.yml"
+    },
+    "client": {
+      "inject": [
+        "@deepseek-ai/dsh-client-locale",
+        "@deepseek-ai/dsh-client-ui-layout",
+        "@deepseek-ai/dsh-client-ui-sidebar"
+      ],
+      "platform": "web"
+    }
+  },
+  "keywords": [
+    "dsh-plugin",
+    "deepseek-harness",
+    "deepseek",
+    "mobile",
+    "pocket",
+    "tunnel",
+    "cpolar",
+    "remote",
+    "keep-awake"
+  ],
+  "engines": {
+    "node": ">=22.13.0"
+  },
+  "optionalDependencies": {
+    "agentroam-cloudflared-win32-x64": "0.2.0-preview.18"
+  },
+  "dependencies": {
+    "ws": "^8.22.0"
+  }
+}
