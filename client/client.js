@@ -14,7 +14,7 @@
  * 共享全局词法作用域；重名就是 SyntaxError，整条 web boot 会失败。
  */
 (() => {
-const MODULE_ID = '@restregular/dsh-pocket';
+const MODULE_ID = 'dsh-pocket-pro';
 
 function alreadyRegistered() {
   const factories = window.__ModuleLoader__?.factories;
